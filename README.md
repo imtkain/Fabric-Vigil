@@ -65,10 +65,12 @@ The service principal must have **Contributor** or **Admin** role on the target 
 
 **Azure Key Vault (Recommended for SPN)**
 
-Store the SPN credentials as Key Vault secrets:
+Store the SPN credentials as Key Vault secrets. The notebook expects these default secret names:
 
 - `fabric-spn-client-id`: The Application (client) ID
 - `fabric-spn-client-secret`: The client secret value
+
+If your Key Vault already stores these values under different names, update the corresponding `notebookutils.credentials.getSecret(...)` calls in the `get_auth_headers` function to match your existing secret names. There is no need to create duplicate secrets.
 
 The user running the deployment notebook must have **Key Vault Secrets User** role (or an equivalent access policy with Get permission).
 
@@ -79,7 +81,7 @@ Alternatively, you can paste the credentials directly into the configuration cel
 1. Download `Deploy_Vigil.ipynb` from this repository.
 2. Import it into the Fabric workspace that contains your mirrored databases.
 3. Open the notebook and edit the **Configuration** cell:
-   - `AUTH_MODE` defaults to `"user"`, which requires no additional setup. Items are created under your identity. For production or shared environments, switch to `"spn"` and configure the SPN credentials below.
+   - **Choose an auth mode.** `AUTH_MODE` defaults to `"user"`, meaning all deployed items are owned by your personal identity. This is the simplest path: no app registration, no secrets, no admin settings. Switch to `"spn"` if you need items owned by a service principal (e.g., so monitoring survives employee offboarding, or so a shared identity owns the pipeline and reflex across environments).
    - If using SPN mode, set `KEY_VAULT_NAME` to your Key Vault name, or populate `SP_CLIENT_ID` and `SP_CLIENT_SECRET`.
    - Optionally adjust `SCHEDULE_INTERVAL_MINUTES` (default: 30).
    - Optionally set `ALERT_EMAIL_OVERRIDE` to route alerts to a specific address or distribution list. If left blank, alerts go to the user running the notebook.
