@@ -31,14 +31,26 @@ Vigil is designed as a starting point. Some directions you could take it:
 
 ## Prerequisites
 
-### 1. Entra ID App Registration (Service Principal)
+### 1. Workspace Permissions
+
+The user running the deployment notebook must have **Contributor** or **Admin** role on the target workspace.
+
+### 2. Fabric Capacity
+
+The target workspace must be on a Fabric capacity (F-SKU or Trial). Data Activator requires Fabric capacity.
+
+### 3. (Optional) Service Principal Setup
+
+These steps are only required if you switch `AUTH_MODE` to `"spn"`.
+
+**Entra ID App Registration**
 
 1. Go to **Microsoft Entra ID > App registrations > New registration**.
 2. Name it (e.g., `spn-fabric-vigil`) and register.
 3. Under **Certificates & secrets**, create a client secret. Save the value immediately.
 4. Note the **Application (client) ID** and **Directory (tenant) ID**.
 
-### 2. Fabric Tenant Admin Settings
+**Fabric Tenant Admin Settings**
 
 A Fabric Administrator must enable these settings in the **Admin Portal**:
 
@@ -47,11 +59,11 @@ A Fabric Administrator must enable these settings in the **Admin Portal**:
 
 For each setting, add a security group that contains your service principal.
 
-### 3. Workspace Permissions
+**Workspace Access for SPN**
 
 The service principal must have **Contributor** or **Admin** role on the target workspace. Add it via **Workspace Settings > Manage Access**.
 
-### 4. Azure Key Vault (Recommended)
+**Azure Key Vault (Recommended for SPN)**
 
 Store the SPN credentials as Key Vault secrets:
 
@@ -62,17 +74,13 @@ The user running the deployment notebook must have **Key Vault Secrets User** ro
 
 Alternatively, you can paste the credentials directly into the configuration cell (not recommended for production).
 
-### 5. Fabric Capacity
-
-The target workspace must be on a Fabric capacity (F-SKU or Trial). Data Activator requires Fabric capacity.
-
 ## Deployment
 
 1. Download `Deploy_Vigil.ipynb` from this repository.
 2. Import it into the Fabric workspace that contains your mirrored databases.
 3. Open the notebook and edit the **Configuration** cell:
-   - Set `AUTH_MODE` to `"spn"` (recommended) or `"user"`.
-   - Set `KEY_VAULT_NAME` to your Key Vault name, or populate `SP_CLIENT_ID` and `SP_CLIENT_SECRET`.
+   - `AUTH_MODE` defaults to `"user"`, which requires no additional setup. Items are created under your identity. For production or shared environments, switch to `"spn"` and configure the SPN credentials below.
+   - If using SPN mode, set `KEY_VAULT_NAME` to your Key Vault name, or populate `SP_CLIENT_ID` and `SP_CLIENT_SECRET`.
    - Optionally adjust `SCHEDULE_INTERVAL_MINUTES` (default: 30).
    - Optionally set `ALERT_EMAIL_OVERRIDE` to route alerts to a specific address or distribution list. If left blank, alerts go to the user running the notebook.
 4. Run all cells.
@@ -103,7 +111,7 @@ Fabric-Vigil/
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `AUTH_MODE` | `"spn"` | `"spn"` for service principal, `"user"` for interactive identity |
+| `AUTH_MODE` | `"user"` | `"user"` for interactive identity (default), `"spn"` for service principal |
 | `KEY_VAULT_NAME` | `""` | Azure Key Vault name for credential retrieval |
 | `SP_CLIENT_ID` | `""` | Hardcoded client ID (fallback if no Key Vault) |
 | `SP_CLIENT_SECRET` | `""` | Hardcoded client secret (fallback if no Key Vault) |
