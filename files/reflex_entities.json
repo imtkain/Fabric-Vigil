@@ -1,0 +1,67 @@
+[
+  {
+    "uniqueIdentifier": "272c998e-7cd1-4a71-86c0-45ab28535599",
+    "payload": {
+      "name": "RealTimeHub",
+      "connection": {
+        "scope": "Artifact",
+        "tenantId": "__TENANT_GUID__",
+        "workspaceId": "__WORKSPACE_GUID__",
+        "artifactId": "__PIPELINE_GUID__",
+        "eventGroupType": "Microsoft.Fabric.JobEvents"
+      },
+      "filterSettings": {
+        "eventTypes": [
+          {
+            "name": "Microsoft.Fabric.JobEvents.ItemJobCreated"
+          },
+          {
+            "name": "Microsoft.Fabric.JobEvents.ItemJobStatusChanged"
+          },
+          {
+            "name": "Microsoft.Fabric.JobEvents.ItemJobSucceeded"
+          },
+          {
+            "name": "Microsoft.Fabric.JobEvents.ItemJobFailed"
+          }
+        ],
+        "filters": [
+          {
+            "values": [
+              "Fail"
+            ],
+            "operatorType": "StringContains",
+            "key": "data.jobStatus"
+          }
+        ]
+      }
+    },
+    "type": "realTimeHubSource-v1"
+  },
+  {
+    "uniqueIdentifier": "80419d68-8240-49d8-a585-1230dd140195",
+    "payload": {
+      "name": "JobEvents event",
+      "definition": {
+        "type": "Event",
+        "instance": "{\"templateId\":\"SourceEvent\",\"templateVersion\":\"1.1\",\"steps\":[{\"name\":\"SourceEventStep\",\"id\":\"8956a561-3339-42e3-8c46-cbc05dac7948\",\"rows\":[{\"name\":\"SourceSelector\",\"kind\":\"SourceReference\",\"arguments\":[{\"name\":\"entityId\",\"type\":\"string\",\"value\":\"272c998e-7cd1-4a71-86c0-45ab28535599\"}]}]}]}"
+      }
+    },
+    "type": "timeSeriesView-v1"
+  },
+  {
+    "uniqueIdentifier": "f05c936b-5997-4095-aa90-77e703e90942",
+    "payload": {
+      "name": "JobEvents event alert",
+      "definition": {
+        "type": "Rule",
+        "instance": "{\"steps\":[{\"id\":\"f4c7ae8e-0620-404f-b04b-1cc7bf85f5f5\",\"name\":\"FieldsDefaultsStep\",\"rows\":[{\"arguments\":[{\"arguments\":[{\"name\":\"entityId\",\"type\":\"string\",\"value\":\"80419d68-8240-49d8-a585-1230dd140195\"}],\"kind\":\"EventReference\",\"name\":\"event\",\"type\":\"complex\"}],\"kind\":\"Event\",\"name\":\"EventSelector\"}]},{\"id\":\"2f30d128-a529-412c-9f95-662fb5fbd6af\",\"name\":\"EventDetectStep\",\"rows\":[{\"arguments\":[],\"kind\":\"OnEveryValue\",\"name\":\"OnEveryValue\"}]},{\"id\":\"3b2286ef-6fdc-4a43-8c16-17a18cb90e56\",\"name\":\"ActStep\",\"rows\":[{\"arguments\":[{\"name\":\"messageLocale\",\"type\":\"string\",\"value\":\"en-us\"},{\"name\":\"sentTo\",\"type\":\"array\",\"values\":[{\"type\":\"string\",\"value\":\"__USER_UPN__\"}]},{\"name\":\"copyTo\",\"type\":\"array\",\"values\":[]},{\"name\":\"bCCTo\",\"type\":\"array\",\"values\":[]},{\"name\":\"subject\",\"type\":\"array\",\"values\":[{\"name\":\"string\",\"type\":\"string\",\"value\":\"Mirror Monitoring Has Detected a Failure\"}]},{\"name\":\"headline\",\"type\":\"array\",\"values\":[{\"name\":\"string\",\"type\":\"string\",\"value\":\"Mirror Monitoring Has Detected a Sync Failure\"}]},{\"name\":\"optionalMessage\",\"type\":\"array\",\"values\":[{\"name\":\"string\",\"type\":\"string\",\"value\":\"One or more mirrored tables, databases, or gateways is currently impaired. Mirrored data may be stale or unavailable until the issue is resolved.\"}]},{\"name\":\"additionalInformation\",\"type\":\"array\",\"values\":[]}],\"kind\":\"EmailMessage\",\"name\":\"EmailBinding\"}]}],\"templateId\":\"EventTrigger\",\"templateVersion\":\"1.2.3\"}",
+        "settings": {
+          "shouldRun": true,
+          "shouldApplyRuleOnUpdate": true
+        }
+      }
+    },
+    "type": "timeSeriesView-v1"
+  }
+]
